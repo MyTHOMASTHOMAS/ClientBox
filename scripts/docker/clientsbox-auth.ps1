@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # clientsbox-auth.ps1 — Initialisation de l'authentification et approbation CLI
 # ==============================================================================
 # Ouvre un conteneur interactif avec montage miroir du dossier de travail actuel

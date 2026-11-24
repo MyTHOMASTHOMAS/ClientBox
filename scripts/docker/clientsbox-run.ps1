@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # clientsbox-run.ps1 — Mode 2 : Wrapper d'exécution global conteneurisé ClientsBox
 # ==============================================================================
 # Lance ClientsBox dans un conteneur éphémère (--rm) en montant dynamiquement
