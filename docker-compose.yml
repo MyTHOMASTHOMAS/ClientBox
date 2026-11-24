@@ -18,6 +18,7 @@ services:
       - HOST=0.0.0.0
       - PORT=2974
       - AGENTS_DIR=.agents
+      - IS_SANDBOX=1
     restart: unless-stopped
 
 volumes:

@@ -30,6 +30,7 @@ done
 DOCKER_ARGS=(
   --rm
   --init
+  -e IS_SANDBOX=1
   -v "$AUTH_VOLUME:/root"
   -v "$CURRENT_DIR:$CURRENT_DIR"
   -w "$CURRENT_DIR"

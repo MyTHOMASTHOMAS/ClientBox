@@ -16,7 +16,7 @@ ClientsBox propose une image Docker officielle standardisée reposant sur `node:
   - **Claude CLI** (`claude`)
   - **Antigravity CLI** (`agy`)
   - **Codex CLI** (`codex`)
-- Les variables d'environnement préconfigurées (`HOST=0.0.0.0`, `PORT=2974`, `AGENTS_DIR=.agents`, chemins `*_CLI_BIN`).
+- Les variables d'environnement préconfigurées (`HOST=0.0.0.0`, `PORT=2974`, `AGENTS_DIR=.agents`, `IS_SANDBOX=1` pour autoriser `--dangerously-skip-permissions` sur Claude Code sous Docker, chemins `*_CLI_BIN`).
 
 Aucune installation locale de Node 24 ni des 4 CLI tiers n'est requise sur la machine hôte.
 

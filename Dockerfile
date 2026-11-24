@@ -65,6 +65,7 @@ COPY --from=builder /build/dist/clientsbox.js /opt/clientsbox/clientsbox.js
 ENV HOST=0.0.0.0 \
     PORT=2974 \
     AGENTS_DIR=.agents \
+    IS_SANDBOX=1 \
     CURSOR_CLI_BIN=/usr/local/bin/cursor-agent \
     CLAUDE_CLI_BIN=/usr/local/bin/claude \
     ANTIGRAVITY_CLI_BIN=/usr/local/bin/agy \
