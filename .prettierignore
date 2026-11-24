@@ -1,0 +1,12 @@
+node_modules
+dist
+out
+.vitest
+package-lock.json
+rapports/
+tdd/
+.agents/
+.local/
+.gemini/
+tests/
+*.generated.ts

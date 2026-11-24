@@ -1,0 +1,123 @@
+# ==============================================================================
+# ClientsBox — Règles d'exclusion du bundle Markdown (no_include.txt)
+# ==============================================================================
+# - Dossiers & chemins : débutent par '/' (ex: /dist ou /scripts/bundle-doc/config)
+#   Exclut tout dossier ou sous-chemin correspondant n'importe où dans le projet.
+# - Noms de fichiers exacts ou motifs : ex: package-lock.json, .env*
+# - Extensions de fichiers : débutent par '.' (ex: .svg ou .png)
+# - Les lignes vides et les commentaires débutant par '#' sont ignorés.
+
+# ==============================================================================
+# 1. Dossiers et sous-chemins à exclure (partout dans le projet)
+# ==============================================================================
+
+# Répertoires de compilation & build
+/dist
+/build
+/out
+
+# Données locales runtime & état persistant ClientsBox
+/.agents
+/.agents/data
+
+# Gestionnaires de paquets & dépendances
+/node_modules
+/.npm
+
+# Outils de test & rapports d'exécution
+/test-results
+/playwright-report
+/.playwright
+/coverage
+/.nyc_output
+
+# Caches d'outils frontend & bundler
+/.vite
+/.cache
+
+# Contrôle de version
+/.git
+/.github
+
+# Environnements système & assistants
+/.system_generated
+/.devcontainer
+/.local
+
+# Environnements IDE
+/.idea
+/.vscode
+/.settings
+/.history
+
+# Configuration interne du bundler
+/scripts/bundle-doc/config
+
+# Dossier d'environnement & rapports historiques volumineux
+/env
+/rapports
+
+# Dossiers temporaires
+/tmp
+/temp
+
+# ==============================================================================
+# 2. Noms de fichiers exacts et fichiers de verrouillage
+# ==============================================================================
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+no_include.txt
+# Fichiers d'environnement & secrets (.env, .env.*, env.test, etc.)
+.env*
+env.test
+env.example
+env.local
+*.env
+*.env.*
+.DS_Store
+Thumbs.db
+desktop.ini
+.gitkeep
+
+# ==============================================================================
+# 3. Extensions de fichiers à exclure
+# ==============================================================================
+
+# Graphiques et images vectorielles / matricielles (.puml reste inclus)
+.svg
+.png
+.jpg
+.jpeg
+.gif
+.webp
+.bmp
+.tiff
+.ico
+.psd
+.ai
+
+# Documents bureautiques & PDF
+.pdf
+.doc
+.docx
+.xls
+.xlsx
+.ppt
+.pptx
+
+# Archives & binaires
+.zip
+.tar
+.gz
+.tgz
+.7z
+.rar
+.exe
+.dll
+.so
+.dylib
+.bin
+
+# Journaux d'exécution
+.log

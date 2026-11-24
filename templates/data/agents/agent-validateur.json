@@ -1,0 +1,6 @@
+{
+  "id": "agent-validateur",
+  "name": "Agent Validateur",
+  "profilId": "profil-reviewer",
+  "cliId": "cursor-cli"
+}

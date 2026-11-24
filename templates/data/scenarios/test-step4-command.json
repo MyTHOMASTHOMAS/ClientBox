@@ -1,0 +1,27 @@
+{
+  "id": "test-step4-command",
+  "name": "Test Step 4 — Commande Shell Native",
+  "description": "Exécution d'une commande système native créant out/test-runs/step4-command.txt avec la signature de l'environnement OS.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": { "x": 80, "y": 180 }
+    },
+    {
+      "id": "cmd-native",
+      "type": "command",
+      "commandLine": "node -e \"require('fs').writeFileSync('out/test-runs/step4-command.txt', 'COMMAND_NATIVE_OK: ' + process.platform + ' - ' + process.version + '\\n')\"",
+      "position": { "x": 420, "y": 180 }
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-native",
+      "targetPortIndex": 0,
+      "key": "c1"
+    }
+  ]
+}

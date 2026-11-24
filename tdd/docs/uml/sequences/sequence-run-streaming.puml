@@ -1,0 +1,77 @@
+@startuml sequence-run-streaming
+title ClientsBox — Séquence : Exécution d'un bloc Run, Assemblage de Profil et Streaming Live
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam roundcorner 4
+autonumber
+
+actor "Utilisateur" as User
+participant "UI (Canvas / Terminal)" as UI
+participant "SRV (Serveur HTTP)" as SRV
+participant "ENG (Moteur de Blocs)" as ENG
+participant "DATA (Store JSON)" as DATA
+participant "ADPT (CursorCliAdapter)" as ADPT
+participant "Processus (cursor-cli)" as CLI
+
+== 1. Lancement du scénario ==
+
+User -> UI: Clic "Lancer le scénario" (REQ-030)
+UI -> SRV: POST /api/scenarios/:id/run
+SRV -> ENG: startScenario(scenarioId)
+ENG -> DATA: loadScenario(scenarioId)
+DATA --> ENG: scenario, nodes, edges
+
+== 2. Résolution du bloc Run & Assemblage de Prompt ==
+
+ENG -> ENG: Identification du prochain bloc Run
+ENG -> DATA: loadAgent(agentId), loadProfile(profileId), loadPrompt(promptId)
+DATA --> ENG: agent, profile, prompt
+opt exitId défini sur le bloc Run (R-07)
+  ENG -> DATA: loadExit(exitId)
+  DATA --> ENG: exit { id, name, content }
+end
+
+group Assemblage du prompt selon politique (SPEC-ENG-04, REQ-032, R-06, R-07, R-45)
+  alt policy === "chaque_prompt"
+    ENG -> ENG: base = profile.systemPrompt + "\n\n" + prompt.content
+  else policy === "debut_scenario" && premierAppel
+    ENG -> ENG: base = profile.systemPrompt + "\n\n" + prompt.content
+  else policy === "debut_scenario" && !premierAppel
+    ENG -> ENG: base = prompt.content
+  else policy === "une_fois_jusqu_a_clear" && !dejaInjecte
+    ENG -> ENG: base = profile.systemPrompt + "\n\n" + prompt.content
+  else policy === "une_fois_jusqu_a_clear" && dejaInjecte
+    ENG -> ENG: base = prompt.content
+  end
+  alt exitId défini
+    ENG -> ENG: assembledPrompt = base + "\n\n" + exit.content
+  else sans exitId
+    ENG -> ENG: assembledPrompt = base
+  end
+end
+
+== 3. Exécution CLI & Streaming Live ==
+
+ENG -> ADPT: execute(agent, assembledPrompt)
+ADPT -> CLI: spawn("cursor-cli", [flags, assembledPrompt], { stdio: 'pipe' })
+
+loop Pendant l'exécution du processus (Streaming stdout / stderr)
+  CLI -> ADPT: Chunk de texte stdout / stderr
+  ADPT -> ENG: onChunk(chunk)
+  ENG -> SRV: broadcastChunk(scenarioId, nodeId, chunk)
+  SRV -> UI: EventSource / WebSocket (chunk) (SPEC-SRV-02, REQ-024, R-26)
+  UI -> UI: Rendu immédiat dans le composant Terminal (Volatil, zéro log disque, REQ-111)
+end
+
+== 4. Clôture du bloc et propagation ==
+
+CLI --> ADPT: exit(code: 0) (Processus terminé avec succès)
+ADPT --> ENG: ExecutionResult { output, exitCode: 0 }
+ENG -> ENG: Création du BlockMessage { blockType: 'run', value: output, power: 1 } (SPEC-ENG-01)
+ENG -> UI: notifyNodeState(nodeId, "COMPLETED")
+ENG -> ENG: Propagation du message vers les blocs connectés en aval
+
+@enduml

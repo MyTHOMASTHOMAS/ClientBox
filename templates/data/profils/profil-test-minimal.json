@@ -1,0 +1,6 @@
+{
+  "id": "profil-test-minimal",
+  "name": "Profil Test Minimal",
+  "systemPrompt": "Mode test : réponse la plus courte possible, sans explication.",
+  "policy": "une_fois_jusqu_a_clear"
+}

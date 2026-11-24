@@ -1,0 +1,297 @@
+@import 'tailwindcss';
+@source '../**/*.{ts,tsx}';
+
+@theme {
+  --color-surface: #0f131c;
+  --color-surface-dim: #0f131c;
+  --color-surface-bright: #353943;
+  --color-surface-container-lowest: #0a0e17;
+  --color-surface-container-low: #181b25;
+  --color-surface-container: #1c1f29;
+  --color-surface-container-high: #262a34;
+  --color-surface-container-highest: #31353f;
+  --color-on-surface: #f1f5f9;
+  --color-on-surface-variant: #94a3b8;
+  --color-inverse-surface: #dfe2ef;
+  --color-inverse-on-surface: #2c303a;
+  --color-outline: #64748b;
+  --color-outline-variant: #334155;
+  --color-surface-tint: #3b82f6;
+  --color-primary: #60a5fa;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #2563eb;
+  --color-on-primary-container: #ffffff;
+  --color-inverse-primary: #005ac2;
+  --color-secondary: #c084fc;
+  --color-on-secondary: #3c0091;
+  --color-secondary-container: #6b21a8;
+  --color-on-secondary-container: #f3e8ff;
+  --color-tertiary: #34d399;
+  --color-on-tertiary: #003824;
+  --color-tertiary-container: #059669;
+  --color-on-tertiary-container: #ecfdf5;
+  --color-error: #f87171;
+  --color-on-error: #ffffff;
+  --color-error-container: #dc2626;
+  --color-on-error-container: #fef2f2;
+  --color-background: #090d16;
+  --color-on-background: #f1f5f9;
+  --color-surface-variant: #1e293b;
+  --color-surface-base: #080c14;
+  --color-surface-panel: #0f172a;
+  --color-surface-elevated: #1e293b;
+  --color-surface-overlay: #273549;
+  --color-border-subtle: #1e293b;
+  --color-border-default: #334155;
+  --color-border-focus: #3b82f6;
+  --color-status-active: #38bdf8;
+  --color-status-success: #10b981;
+  --color-status-warning: #f59e0b;
+  --color-status-error: #ef4444;
+  --color-status-neutral: #64748b;
+  --color-accent-agent: #a855f7;
+  --color-terminal-black: #020617;
+  --color-terminal-text: #f8fafc;
+  --color-canvas-dot: #334155;
+  --color-surface-canvas: #090d16;
+
+  --text-display-sm: 1.5rem;
+  --text-headline-lg: 1.75rem;
+  --text-body-md: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-label-md: 0.875rem;
+  --text-caption: 0.75rem;
+
+  --font-sans:
+    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface-base);
+  color: var(--color-on-surface);
+  min-height: 100vh;
+  margin: 0;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Material Symbols Outlined Font Setup */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Câbles de Bézier SVG interactifs */
+path.cable {
+  fill: none !important;
+  stroke: #475569;
+  stroke-width: 2px;
+  stroke-linecap: round;
+  cursor: pointer;
+  transition:
+    stroke 0.2s ease,
+    stroke-width 0.2s ease;
+}
+
+path.cable:hover {
+  stroke: #38bdf8 !important;
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 6px #38bdf8);
+}
+
+path.cable.cable-true,
+path.cable[data-branch='true'] {
+  stroke: #10b981 !important;
+  stroke-width: 2.5px;
+}
+
+path.cable.cable-true:hover,
+path.cable[data-branch='true']:hover {
+  stroke: #34d399 !important;
+  stroke-width: 3.5px;
+  filter: drop-shadow(0 0 6px #10b981);
+}
+
+path.cable.cable-false,
+path.cable[data-branch='false'] {
+  stroke: #ef4444 !important;
+  stroke-width: 2.5px;
+}
+
+path.cable.cable-false:hover,
+path.cable[data-branch='false']:hover {
+  stroke: #f87171 !important;
+  stroke-width: 3.5px;
+  filter: drop-shadow(0 0 6px #ef4444);
+}
+
+/* Animations de transition des modales */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(12px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation sobre d'incitation à l'enregistrement lorsque le lancement est bloqué */
+@keyframes savePulse {
+  0%,
+  100% {
+    opacity: 1;
+    background-color: rgba(96, 165, 250, 0.16);
+    border-color: rgba(96, 165, 250, 0.5);
+    color: #93c5fd;
+  }
+  50% {
+    opacity: 0.6;
+    background-color: rgba(96, 165, 250, 0.04);
+    border-color: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+  }
+}
+
+.animate-save-pulse {
+  animation: savePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Rendu Markdown page Instructions (marked / GFM, ADR-017) */
+.instructions-md {
+  color: var(--color-on-surface-variant);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.instructions-md h1 {
+  margin: 0.5rem 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+}
+
+.instructions-md h2 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-on-surface);
+}
+
+.instructions-md h3 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-on-surface);
+}
+
+.instructions-md p {
+  margin: 0.5rem 0;
+}
+
+.instructions-md ul,
+.instructions-md ol {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.instructions-md li {
+  margin: 0.25rem 0;
+}
+
+.instructions-md a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.instructions-md-dead-link {
+  color: var(--color-on-surface-variant);
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: help;
+}
+
+.instructions-md code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  background: rgb(255 255 255 / 0.1);
+}
+
+.instructions-md pre {
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(0 0 0 / 0.3);
+  padding: 0.75rem;
+}
+
+.instructions-md pre code {
+  padding: 0;
+  background: transparent;
+}
+
+.instructions-md table {
+  width: 100%;
+  margin: 0.75rem 0;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.instructions-md th {
+  border-bottom: 1px solid rgb(255 255 255 / 0.2);
+  padding: 0.375rem 0.5rem;
+  font-weight: 600;
+  color: var(--color-on-surface);
+}
+
+.instructions-md td {
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+  padding: 0.375rem 0.5rem;
+  vertical-align: top;
+}
+
+.instructions-md blockquote {
+  margin: 0.75rem 0;
+  border-left: 3px solid var(--color-outline);
+  padding-left: 0.75rem;
+  color: var(--color-on-surface-variant);
+}
+
+.instructions-md hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
+}

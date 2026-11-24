@@ -1,0 +1,44 @@
+{
+  "id": "test-step1-dialogue",
+  "name": "Test Step 1 — Dialogue Multi-Agents",
+  "description": "Agent A écrit dans out/test-runs/step1-dialogue.txt puis Agent B complète le dialogue dans le même fichier.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": { "x": 80, "y": 180 }
+    },
+    {
+      "id": "agent-a-ecrit",
+      "type": "run",
+      "position": { "x": 400, "y": 180 },
+      "agentId": "agent-test-a",
+      "promptId": "prompt-step1-dialogue-a",
+      "exitId": "exit-fait"
+    },
+    {
+      "id": "agent-b-repond",
+      "type": "run",
+      "position": { "x": 760, "y": 180 },
+      "agentId": "agent-test-b",
+      "promptId": "prompt-step1-dialogue-b",
+      "exitId": "exit-fait"
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "agent-a-ecrit",
+      "targetPortIndex": 0,
+      "key": "c1"
+    },
+    {
+      "sourceNodeId": "agent-a-ecrit",
+      "sourcePortIndex": 0,
+      "targetNodeId": "agent-b-repond",
+      "targetPortIndex": 0,
+      "key": "c2"
+    }
+  ]
+}

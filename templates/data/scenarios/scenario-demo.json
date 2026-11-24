@@ -1,0 +1,57 @@
+{
+  "id": "scenario-demo",
+  "name": "Scénario Démo Pipeline Dev",
+  "description": "Scénario exemple reliant Start -> Agent Codeur -> If Validation -> Agent Validateur",
+  "nodes": [
+    {
+      "id": "node-start",
+      "type": "start",
+      "position": { "x": 80, "y": 180 }
+    },
+    {
+      "id": "node-coder",
+      "type": "run",
+      "position": { "x": 440, "y": 180 },
+      "agentId": "agent-codeur",
+      "promptId": "prompt-generation",
+      "exitId": "exit-termine"
+    },
+    {
+      "id": "node-if",
+      "type": "if",
+      "position": { "x": 800, "y": 180 },
+      "ifScriptId": "est-valide"
+    },
+    {
+      "id": "node-reviewer",
+      "type": "run",
+      "position": { "x": 1160, "y": 140 },
+      "agentId": "agent-validateur",
+      "promptId": "prompt-validation",
+      "exitId": "exit-termine"
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "node-start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "node-coder",
+      "targetPortIndex": 0,
+      "key": "initial_input"
+    },
+    {
+      "sourceNodeId": "node-coder",
+      "sourcePortIndex": 0,
+      "targetNodeId": "node-if",
+      "targetPortIndex": 0,
+      "key": "code_output"
+    },
+    {
+      "sourceNodeId": "node-if",
+      "sourcePortIndex": 0,
+      "targetNodeId": "node-reviewer",
+      "targetPortIndex": 0,
+      "key": "validated_code"
+    }
+  ]
+}

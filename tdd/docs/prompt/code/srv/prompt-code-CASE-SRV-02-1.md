@@ -1,0 +1,70 @@
+# Prompt — écrire le code de CASE-SRV-02-1
+
+> **Titre :** CASE-SRV-02-1 — Distribution des fichiers statiques UI à la racine HTTP  
+> **Exigence / Critère d'acceptation :** AC-SRV-02-1 dans `tdd/specs/SRV.md`  
+> **Cas de test associé :** [`CASE-SRV-02-1.md`](file:///home/thomaz/Documents/project/AI/ClientsBox/tdd/tests/srv/CASE-SRV-02-1.md)  
+> **Fichier de test unitaire cible :** [`CASE-SRV-02-1.test.ts`](file:///home/thomaz/Documents/project/AI/ClientsBox/tests/srv/CASE-SRV-02-1.test.ts)  
+> **Méthode de test exacte :** `test_CASE_SRV_02_1_static_ui_files_distribution_on_http_root`  
+>
+> Étape « test → code ». Le test est le contrat, l'agent produit le code sous `src/`.  
+> Suit [`tdd/docs/prompt/code/PROMPT_CONTEXTE_INITIAL_CODE.md`](file:///home/thomaz/Documents/project/AI/ClientsBox/tdd/docs/prompt/code/PROMPT_CONTEXTE_INITIAL_CODE.md).  
+>
+> **Prérequis :** le test `tests/srv/CASE-SRV-02-1.test.ts` doit exister et être rouge.  
+>
+> À injecter tel quel dans l'agent. Un prompt = une tâche = un test qui passe du rouge au vert.
+
+```text
+CONTEXTE
+Stack : Node.js ≥ 24 / TypeScript (ESM NodeNext), runner natif node:test + node:assert/strict.
+Commande de test globale : node --test tests/**/*.test.ts
+Commande pour ce seul test : node --test tests/srv/CASE-SRV-02-1.test.ts
+Commande d'audit d'architecture : conformité manuelle aux SPEC-ARCH applicables + consultation de out/arch-report.json / out/rapport-arch.md dès que l'outil SPEC-ARCH-09 est disponible (statut 🟢 CONFORME requis)
+
+CE QUE JE TE DONNE
+- Le test à faire passer : tests/srv/CASE-SRV-02-1.test.ts::test_CASE_SRV_02_1_static_ui_files_distribution_on_http_root
+- Le cas de test : tdd/tests/srv/CASE-SRV-02-1.md
+- La spécification : tdd/specs/SRV.md, section SPEC-SRV-02 (AC-SRV-02-1)
+- Les exigences d'architecture : tdd/specs/ARCH.md (SPEC-ARCH-01, SPEC-ARCH-03, SPEC-ARCH-05, SPEC-ARCH-07) et tdd/specs/sommaire.md
+- Les signatures d'architecture : tdd/docs/signature/signature-lib.md (LIB-007, LIB-008, LIB-010), tdd/docs/signature/signature-types.md (TYPES-011), tdd/docs/signature/signature-src.md (ROOT-001 — hors périmètre d'écriture de cette tâche)
+- Le modèle du domaine : tdd/docs/uml/domain.puml
+- ADR de référence : tdd/docs/adr/ADR-001-socle-applicatif.md, tdd/docs/adr/ADR-006-strategie-et-harnais-de-test.md
+- Les fichiers du domaine que tu peux créer / modifier :
+  - src/lib/http/http-server.ts
+  - src/lib/http/router.ts
+  - src/lib/http/static-handler.ts
+  - src/types/contracts/http-router.contract.ts
+
+TA TÂCHE
+1. Fais passer au vert le test test_CASE_SRV_02_1_static_ui_files_distribution_on_http_root, et lui seul.
+2. À la fin de la tâche, vérifie la conformité aux règles d'architecture listées, analyse tout rapport d'audit disponible sous out/, et applique les corrections nécessaires pour garantir 0 infraction sur le périmètre touché.
+
+CONTRAINTES
+1. Ne modifie aucun fichier sous tests/. Le test est le contrat absolu et intangible, pas une proposition. Si tu le crois faux, arrête-toi et dis-le-moi.
+2. Ne le contourne pas : pas de skip, pas de xfail, pas de tolérance élargie, pas d'assertion neutralisée.
+3. Implémente la règle prescrite par SPEC-SRV-02 / REQ-003 / LIB-008 :
+   - `GET /` sert le HTML principal depuis les assets compilés en mémoire (200, Content-Type text/html, corps contenant « ClientsBox » selon ADR-012).
+   - Assets existants (`/assets/app.js`, `/styles/app.css`) → 200 avec MIME javascript / css adaptés.
+   - Ressource absente → 404 sans planter le processus ; le serveur reste capable de servir `/` ensuite.
+   - Protection anti path-traversal (`..`) conformément à LIB-008 — même si ce TU ne l'attaque pas explicitement, ne l'affaiblis pas.
+4. La distribution statique vit dans `src/lib/http/static-handler.ts` (LIB-008), câblée par `createLocalHttpServer` (LIB-010) avec `MiniRouter` (LIB-007) pour les routes API. Pas dans un contrôleur UI, pas dans `src/domain/`.
+5. Respecte le modèle du domaine documenté dans tdd/docs/uml/domain.puml. N'invente aucune entité absente. Si le test l'exige, arrête-toi et dis-le-moi.
+6. N'implémente que ce que ce test exige. Ne traite pas l'affichage console URL (CASE-SRV-02-2), l'arrêt gracieux / signaux (CASE-SRV-02-3/02-5), ni l'auth/sandbox (CASE-SRV-02-4). Les autres tests rouges restent rouges.
+7. Respecte strictement tdd/specs/ARCH.md :
+   - SPEC-ARCH-01 (DAG / étanchéité)
+   - SPEC-ARCH-03 (I/O `node:fs` / `node:http` confinée à `src/lib/`)
+   - SPEC-ARCH-05 (volumétrie < 250 lignes, arités bornées)
+   - SPEC-ARCH-07 (complexité < 10, nommage, TSDoc)
+8. Ne modifie aucun fichier en dehors de la liste autorisée ci-dessus.
+9. Aucune dépendance nouvelle — modules Node.js natifs uniquement.
+10. Convention ESM NodeNext : imports relatifs `.js` ; typage strict sans `any`.
+11. Écoute exclusivement sur localhost (`127.0.0.1`) conformément à SPEC-SRV-02 / LIB-010.
+12. Le port 9781 du TU est un jeu d'essai d'isolation — ne le code pas comme port par défaut applicatif.
+
+RENDS
+- Le diff.
+- La liste des fichiers créés ou modifiés sous src/.
+- La commande exacte pour lancer ce seul test, et son résultat (🟢 VERT).
+- Le résultat de la vérification d'audit / conformité ARCH sur le périmètre touché (🟢 CONFORME).
+- Où vit la règle, en une ligne : fichier et fonction (`serveStatic` / câblage LIB-010).
+- Ce que tu as dû supposer et qui n'était ni dans la spécification ni dans le test.
+```

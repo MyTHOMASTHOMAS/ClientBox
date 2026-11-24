@@ -1,0 +1,5 @@
+{
+  "id": "prompt-step3-verifier",
+  "name": "Step 3 — Vérifier l'oubli après ClearContext",
+  "content": "Quel code secret t'ai-je donné dans cette conversation ? Si tu ne le connais pas ou si tu l'as oublié, réponds impérativement : INCONNU. Ne cherche pas dans les fichiers. Réponds uniquement : FAIT."
+}

@@ -1,0 +1,5 @@
+{
+  "id": "prompt-step1-dialogue-a",
+  "name": "Step 1 — Agent A écrit",
+  "content": "Crée le fichier out/test-runs/step1-dialogue.txt (et ses dossiers parents si besoin) contenant exactement la ligne : \"Agent A: Bonjour Agent B, prêt pour le test\". Réponds uniquement : FAIT."
+}

@@ -1,0 +1,5 @@
+{
+  "id": "prompt-audit-test-suite",
+  "name": "Audit de la suite de tests",
+  "content": "Tu es l'agent auditeur qualité. Analyse l'intégralité des fichiers de sortie générés dans le dossier \"out/test-runs/\" :\n1. \"clean.log\" : vérifie qu'il débute par \"[CLEAN_SLATE]\" avec un horodatage valide.\n2. \"step1-dialogue.txt\" : vérifie la présence du dialogue entre Agent A et Agent B.\n3. \"step2-vrai.txt\" : vérifie sa présence (et l'absence impérative de \"step2-faux.txt\").\n4. \"step3-clear-context.txt\" : vérifie que l'Agent a bien perdu la mémoire du secret après le ClearContext.\n5. \"step4-command.txt\" : vérifie la présence du message de confirmation de la commande native.\n6. \"step5-recursion.txt\" : vérifie qu'il contient exactement 3 lignes d'itérations récursives.\n\nRédige impérativement le fichier Markdown \"out/test-runs/RAPPORT-AUDIT.md\" avec un titre, un tableau récapitulatif des statuts (PASS/FAIL) pour chaque scénario, l'analyse détaillée des preuves et la conclusion globale."
+}

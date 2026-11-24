@@ -1,0 +1,89 @@
+@startuml components
+title ClientsBox — Architecture des Composants & Découpage Modulaire
+
+skinparam componentStyle uml2
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+
+actor "Utilisateur\n(Navigateur Web)" as User
+node "Processus Externe" {
+  component [CLI Cursor (cursor-cli)] as CursorCLI
+}
+database "Disque Local" {
+  folder ".agents/data/" as FileStore {
+    file "agents/*.json"
+    file "profils/*.json"
+    file "prompts/*.json"
+    file "exit/*.json"
+    file "if/*.js"
+    file "scenarios/*.json"
+  }
+}
+
+package "ClientsBox Application (Node >= 24 / TypeScript)" {
+
+  package "Domaine UI — Interface Utilisateur (Preact / Tailwind — ADR-013)" {
+    component [Vues CRUD\n(Formulaires en français)] as UIView
+    component [Canvas N8N\n(Éditeur Visuel de Graphe)] as UICanvas
+    component [Terminal Live\n(Composant Web Volatil)] as UITerminal
+  }
+
+  package "Domaine SRV — Serveur HTTP & Streaming" {
+    component [Serveur HTTP (port 2974)\n& Routeur REST] as SRV_Http
+    component [Gestionnaire de Streaming\n(Streaming SSE)] as SRV_Stream
+  }
+
+  package "Domaine ENG — Moteur d'Ordonnancement" {
+    component [Exécuteur de Graphe\n(Cycle de vie Scénario)] as ENG_Executor
+    component [Évaluateur de Join\n& Calcul de Power] as ENG_Join
+    component [Assembleur de Prompt\n& Politiques Profil] as ENG_Prompt
+  }
+
+  package "Domaine ADPT — Adapters CLI" {
+    component [Registre des Adapters\n(Sélection opérationnelle)] as ADPT_Registry
+    component [CursorCliAdapter\n(Spawn & Pipe stdio)] as ADPT_Cursor
+  }
+
+  package "Domaine DATA — Persistance & Schémas" {
+    component [Gestionnaire de Fichiers JSON\n(I/O Atomiques)] as DATA_Store
+    component [Validateur de Schémas\n(Validation Entités)] as DATA_Validator
+  }
+}
+
+' Interactions Utilisateur
+User --> UIView : Navigation & Formulaires (C-06, REQ-007)
+User --> UICanvas : Conception Scénario & Lancement (REQ-014, REQ-030)
+User --> UITerminal : Streaming live & Contrôles Stop/Clear (REQ-024, REQ-025)
+
+' Interactions UI -> SRV
+UIView --> SRV_Http : API REST CRUD (/api/*)
+UICanvas --> SRV_Http : Lancement (/api/scenarios/:id/run)
+UITerminal --> SRV_Http : Contrôles (DELETE /api/scenarios/:id/run, POST /api/agents/:id/clear)
+SRV_Stream ..> UITerminal : Flux temps réel stdout/stderr (R-26)
+
+' Interactions SRV -> ENG & DATA
+SRV_Http --> DATA_Store : Opérations CRUD directes (SPEC-SRV-01)
+SRV_Http --> ENG_Executor : Démarrage / Stop / Événements (SPEC-SRV-02)
+ENG_Executor ..> SRV_Stream : Émission des chunks CLI capturés
+
+' Interactions Internes ENG
+ENG_Executor --> ENG_Join : Résolution des dépendances (sum power === N)
+ENG_Executor --> ENG_Prompt : Préparation du prompt injecté
+ENG_Executor --> DATA_Store : Chargement graphe & dépendances
+
+' Interactions ENG -> ADPT
+ENG_Prompt --> ADPT_Registry : Résolution de l'adapter actif
+ENG_Executor --> ADPT_Cursor : execute(agent, assembledPrompt) / stop() / clearContext()
+
+' Interactions ADPT -> Processus Externe
+ADPT_Cursor --> CursorCLI : child_process.spawn("cursor-cli") (SPEC-ADPT-01)
+CursorCLI ..> ADPT_Cursor : Flux stdout / stderr en direct (ADR-003)
+ADPT_Cursor --> CursorCLI : SIGTERM / SIGKILL (Arrêt d'urgence Stop, SPEC-ADPT-03)
+
+' Interactions DATA -> Système de fichiers
+DATA_Store --> DATA_Validator : Contrôle de validité des structures
+DATA_Store --> FileStore : Lectures / Écritures fichiers JSON (SPEC-DATA-04, ADR-005)
+
+@enduml

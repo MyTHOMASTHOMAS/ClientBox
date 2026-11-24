@@ -1,0 +1,54 @@
+@startuml sequence-stop-emergency
+title ClientsBox — Séquence : Arrêt d'Urgence (Stop) en cours de Run et en état de Pause
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam roundcorner 4
+autonumber
+
+actor "Utilisateur" as User
+participant "UI (Bouton Stop)" as UI
+participant "SRV (Serveur HTTP)" as SRV
+participant "ENG (Moteur de Blocs)" as ENG
+participant "ADPT (CursorCliAdapter)" as ADPT
+participant "Processus (cursor-cli)" as CLI
+
+== Cas A : Arrêt d'Urgence pendant l'exécution active d'un bloc Run ==
+
+User -> UI: Clic sur le bouton "Stop" (REQ-025, R-34)
+UI -> SRV: DELETE /api/scenarios/:id/run (Signal d'arrêt d'urgence — CTL-002)
+SRV -> ENG: abortScenario(scenarioId)
+
+ENG -> ADPT: killRunningProcess(agentId) (SPEC-ADPT-03)
+ADPT -> CLI: Envoi du signal SIGTERM
+alt Processus ne s'arrête pas dans le délai imparti
+  ADPT -> CLI: Envoi du signal forcé SIGKILL (ADR-003)
+end
+CLI --> ADPT: Processus enfant terminé
+
+note over ADPT, CLI
+  <b>Préservation de session native :</b>
+  Le kill du processus n'efface pas l'historique conversationnel de cursor-cli.
+  Stop != ClearContext (R-24, AC-ADPT-03-1).
+end note
+
+ENG -> ENG: Marque le scénario et le bloc courant à l'état "STOPPED"
+ENG -> SRV: scenarioAborted(scenarioId)
+SRV -> UI: Event / Response { status: 'STOPPED' }
+UI -> UI: Confirmation visuelle en français de l'arrêt du scénario (AC-UI-03-2)
+
+== Cas B : Arrêt d'Urgence alors qu'un bloc est en état de Pause (Join incomplet) ==
+
+User -> UI: Clic sur le bouton "Stop" pendant un état de pause
+UI -> SRV: DELETE /api/scenarios/:id/run (Signal d'arrêt d'urgence — CTL-002)
+SRV -> ENG: abortScenario(scenarioId)
+
+ENG -> ENG: Rompt immédiatement l'attente de pause du join (R-34)
+ENG -> ENG: Marque le scénario à l'état "STOPPED"
+ENG -> SRV: scenarioAborted(scenarioId)
+SRV -> UI: Event / Response { status: 'STOPPED' }
+UI -> UI: Le nœud en pause passe à l'état stoppé, scénario déverrouillé
+
+@enduml

@@ -1,0 +1,25 @@
+services:
+  clientsbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: clientsbox:latest
+    container_name: clientsbox
+    init: true
+    ports:
+      - '127.0.0.1:2974:2974'
+    volumes:
+      - .:/workspace
+      - clientsbox-cli-auth:/root
+      # Montages Git optionnels (pour commits/push par les agents CLI) :
+      # - ~/.gitconfig:/root/.gitconfig:ro
+      # - ~/.ssh:/root/.ssh:ro
+    environment:
+      - HOST=0.0.0.0
+      - PORT=2974
+      - AGENTS_DIR=.agents
+    restart: unless-stopped
+
+volumes:
+  clientsbox-cli-auth:
+    external: true

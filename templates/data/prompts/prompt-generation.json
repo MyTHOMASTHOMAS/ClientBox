@@ -1,0 +1,5 @@
+{
+  "id": "prompt-generation",
+  "name": "Génération de fonctionnalités",
+  "content": "Implémente la fonctionnalité demandée en respectant rigoureusement les contrats TypeScript et les règles d'architecture. Sois concis."
+}

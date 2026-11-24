@@ -1,0 +1,83 @@
+{
+  "id": "test-step3-clear-context",
+  "name": "Test Step 3 — Clear Context et Amnésie de Session",
+  "description": "Agent A mémorise un secret, subit un ClearContext, puis atteste de l'amnésie dans out/test-runs/step3-clear-context.txt.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": { "x": 80, "y": 180 }
+    },
+    {
+      "id": "agent-retient",
+      "type": "run",
+      "position": { "x": 360, "y": 180 },
+      "agentId": "agent-test-a",
+      "promptId": "prompt-step3-retenir",
+      "exitId": "exit-fait"
+    },
+    {
+      "id": "cmd-note-avant",
+      "type": "command",
+      "commandLine": "node -e \"require('fs').writeFileSync('out/test-runs/step3-clear-context.txt', 'AVANT_CLEAR: MEMORISE\\n')\"",
+      "position": { "x": 640, "y": 180 }
+    },
+    {
+      "id": "clear-agent-a",
+      "type": "clearContext",
+      "position": { "x": 920, "y": 180 },
+      "agentId": "agent-test-a"
+    },
+    {
+      "id": "agent-interroge",
+      "type": "run",
+      "position": { "x": 1200, "y": 180 },
+      "agentId": "agent-test-a",
+      "promptId": "prompt-step3-verifier",
+      "exitId": "exit-fait"
+    },
+    {
+      "id": "cmd-note-apres",
+      "type": "command",
+      "commandLine": "node -e \"require('fs').appendFileSync('out/test-runs/step3-clear-context.txt', 'APRES_CLEAR: CONTEXT_PURGE_CONFIRME\\n')\"",
+      "position": { "x": 1480, "y": 180 }
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "agent-retient",
+      "targetPortIndex": 0,
+      "key": "c1"
+    },
+    {
+      "sourceNodeId": "agent-retient",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-note-avant",
+      "targetPortIndex": 0,
+      "key": "c2"
+    },
+    {
+      "sourceNodeId": "cmd-note-avant",
+      "sourcePortIndex": 0,
+      "targetNodeId": "clear-agent-a",
+      "targetPortIndex": 0,
+      "key": "c3"
+    },
+    {
+      "sourceNodeId": "clear-agent-a",
+      "sourcePortIndex": 0,
+      "targetNodeId": "agent-interroge",
+      "targetPortIndex": 0,
+      "key": "c4"
+    },
+    {
+      "sourceNodeId": "agent-interroge",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-note-apres",
+      "targetPortIndex": 0,
+      "key": "c5"
+    }
+  ]
+}

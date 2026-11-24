@@ -1,0 +1,5 @@
+{
+  "id": "prompt-step1-dialogue-b",
+  "name": "Step 1 — Agent B répond",
+  "content": "Lis out/test-runs/step1-dialogue.txt et ajoute à la fin une nouvelle ligne contenant : \"Agent B: Bien reçu Agent A, système opérationnel\". Réponds uniquement : FAIT."
+}

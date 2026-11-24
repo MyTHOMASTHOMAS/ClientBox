@@ -1,0 +1,184 @@
+@startuml domain
+title ClientsBox — Modèle de Classes du Domaine (Entités Métier & Topologie)
+
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam roundcorner 6
+
+package "Ressources Déclaratives (.agents/data/)" {
+
+  enum ProfilePolicy {
+    chaque_prompt
+    debut_scenario
+    une_fois_jusqu_a_clear
+  }
+
+  class Profile {
+    + id: String
+    + name: String
+    + systemPrompt: String
+    + policy: ProfilePolicy
+    + createdAt: ISO8601
+    + updatedAt: ISO8601
+  }
+
+  class Agent {
+    + id: String
+    + name: String
+    + cliId: String = "cursor-cli"
+    + profilId: String
+    + createdAt: ISO8601
+    + updatedAt: ISO8601
+  }
+
+  class Prompt {
+    + id: String
+    + name: String
+    + content: String
+    + createdAt: ISO8601
+    + updatedAt: ISO8601
+  }
+
+  class ExitCondition {
+    + id: String
+    + name: String
+    + content: String
+    + createdAt: ISO8601
+    + updatedAt: ISO8601
+  }
+
+  class IfScript {
+    + id: String
+    + name: String
+    + scriptCode: String
+    + createdAt: ISO8601
+    + updatedAt: ISO8601
+  }
+
+  class Scenario {
+    + id: String
+    + name: String
+    + createdAt: ISO8601
+    + updatedAt: ISO8601
+  }
+}
+
+package "Topologie du Graphe de Scénario (Canvas)" {
+
+  abstract class ScenarioNode {
+    + id: String
+    + blockType: BlockType
+    + positionX: Float
+    + positionY: Float
+  }
+
+  class ScenarioEdge {
+    + id: String
+    + sourceNodeId: String
+    + sourcePortIndex: Integer
+    + targetNodeId: String
+    + targetPortIndex: Integer
+    + key: String
+  }
+
+  class StartBlock {
+    + {static} maxEntries: 0
+    + {static} minOutputs: 1
+    --
+    <i>Émet power=1 sur toutes ses sorties au lancement</i>
+  }
+
+  class RunBlock {
+    + agentId: String
+    + promptId: String
+    + exitConditionId: String [0..1]
+    --
+    <i>Ne lit pas le sac d'entrées</i>
+    <i>Émet {blockType:'run', value:CLI_Output, power:1}</i>
+  }
+
+  class IfBlock {
+    + ifScriptId: String
+    --
+    <i>Évalue if(bag) via le script IfScript associé</i>
+    <i>Sorties Vraies: power=1 si true, sinon 0</i>
+    <i>Sorties Fausses: power=1 si false, sinon 0</i>
+  }
+
+  class ClearContextBlock {
+    + agentId: String
+    --
+    <i>Ne lit pas le sac d'entrées</i>
+    <i>Invoque clearContext sur l'agent</i>
+    <i>Émet {blockType:'clearContext', value:null, power:1}</i>
+  }
+}
+
+package "Messages & Échanges Inter-Blocs (Engine)" {
+
+  class BlockMessage <<Value Object>> {
+    + blockType: String
+    + value: Any
+    + power: Integer {0, 1}
+    --
+    <i>Un message n'a pas de clé</i>
+  }
+
+  class BlockInputBag <<Value Object>> {
+    + entries: Map<String, BlockMessage>
+    --
+    + get(key: String): BlockMessage
+    + sumPower(): Integer
+    + isComplete(wiredCount: Integer): Boolean
+  }
+}
+
+' Relations déclaratives
+Agent "1..*" --> "1" Profile : est configuré avec >
+Profile --> ProfilePolicy : applique >
+
+' Relations topologiques du scénario
+Scenario "1" *-- "1..*" ScenarioNode : contient
+Scenario "1" *-- "0..*" ScenarioEdge : relie
+
+ScenarioNode <|-- StartBlock
+ScenarioNode <|-- RunBlock
+ScenarioNode <|-- IfBlock
+ScenarioNode <|-- ClearContextBlock
+
+RunBlock "0..*" --> "1" Agent : exécute >
+RunBlock "0..*" --> "1" Prompt : utilise >
+RunBlock "0..*" --> "0..1" ExitCondition : additionne l'ordre de sortie >
+IfBlock "0..*" --> "1" IfScript : évalue >
+ClearContextBlock "0..*" --> "1" Agent : réinitialise >
+
+' Flux de messages
+ScenarioNode ..> BlockMessage : émet / reçoit
+IfBlock ..> BlockInputBag : évalue condition via
+BlockInputBag *-- BlockMessage : agrège
+
+note bottom of StartBlock
+  <b>Règle d'Unicité :</b>
+  Exactement 1 bloc Start par Scénario (REQ-015, R-19).
+end note
+
+note bottom of IfBlock
+  <b>Non-Endpoint :</b>
+  Un bloc If ne peut être un endpoint (R-21).
+  Ses 2 familles de sorties sont différenciées (R-10b, R-15).
+end note
+
+note bottom of BlockInputBag
+  <b>Algorithme de Join (R-42, SPEC-ENG-02) :</b>
+  - N = 0 hors Start : pas d'exécution, aucune émission (R-42d)
+  - Exception Start : 0 entrée, déclenchement immédiat (R-42c)
+  - Pour N entrées câblées (N >= 1) :
+    * Attend N messages (y compris power 0) (R-42)
+    * Déclenche si sum(power) === N
+    * Bascule en pause si sum(power) < N ; réévaluation à maj (R-42b)
+end note
+
+@enduml

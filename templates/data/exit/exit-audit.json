@@ -1,0 +1,5 @@
+{
+  "id": "exit-audit",
+  "name": "Clôture audit",
+  "content": "Quand l'audit est terminé, réponds exactement : AUDIT_TERMINE"
+}

@@ -1,0 +1,52 @@
+@startuml sequence-join-power-pause
+title ClientsBox — Séquence : Algorithme de Join (N >= 1), Calcul de Power et Gestion de la Pause
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam roundcorner 4
+autonumber
+
+participant "Bloc Amont 1 (Run)" as Block1
+participant "Bloc Amont 2 (If)" as Block2
+participant "ENG (Join Evaluator)" as ENG
+participant "UI (Canvas)" as UI
+participant "Bloc Cible (Run C, N=2)" as BlockC
+
+== 1. Arrivée du 1er message sur l'entrée 'in1' ==
+
+Block1 -> ENG: emitMessage({ blockType: 'run', value: 'res1', power: 1 })
+ENG -> ENG: Stockage dans le sac: bag['in1'] = { value: 'res1', power: 1 } (SPEC-ENG-01)
+ENG -> ENG: evaluateJoin(BlockC): reçus = 1/2, N = 2
+note over ENG: Join incomplet (1 < 2), BlockC reste inactif
+
+== 2. Arrivée du 2ème message sur l'entrée 'in2' (Branche Fausse If) ==
+
+Block2 -> ENG: evaluateIf(bag) -> false
+Block2 -> ENG: emitMessage({ blockType: 'if', value: null, power: 0 }) (sur branche fausse)
+ENG -> ENG: Stockage dans le sac: bag['in2'] = { value: null, power: 0 }
+ENG -> ENG: evaluateJoin(BlockC): reçus = 2/2, N = 2 (Tous les messages reçus)
+
+== 3. Évaluation de la condition de Power (SPEC-ENG-02, R-42) ==
+
+ENG -> ENG: sumPower = bag['in1'].power (1) + bag['in2'].power (0) = 1
+note over ENG: sumPower (1) < N (2) -> Condition non remplie !
+
+ENG -> ENG: Bascule de BlockC à l'état "PAUSE" (R-42b)
+ENG -> UI: notifyNodeState(BlockC, "PAUSE")
+UI -> UI: Affichage de l'indicateur visuel "En pause" sur le canvas (AC-UI-02-4)
+
+== 4. Déblocage ultérieur suite à une nouvelle émission amont ==
+
+note over Block2: Réévaluation ou nouvelle émission avec branche vraie prise
+Block2 -> ENG: emitMessage({ blockType: 'if', value: 'nouvelle_valeur', power: 1 })
+ENG -> ENG: Mise à jour du sac: bag['in2'] = { value: '...', power: 1 }
+ENG -> ENG: evaluateJoin(BlockC): sumPower = 1 + 1 = 2 === N (2) (R-42)
+
+ENG -> ENG: Fin de la pause -> Bascule de BlockC à l'état "ACTIVE"
+ENG -> UI: notifyNodeState(BlockC, "ACTIVE")
+UI -> UI: Mise à jour visuelle du nœud sur le canvas
+ENG -> BlockC: execute(BlockC, bag) (Déclenchement effectif de l'exécution)
+
+@enduml

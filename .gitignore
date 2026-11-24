@@ -1,0 +1,45 @@
+# Dépendances Node
+node_modules/
+package-lock.json
+
+# Fichiers SVG générés (diagrammes compilés depuis .puml)
+*.svg
+**/*.svg
+
+# Environnement et logs
+.env*
+*.env
+*.env.*
+env/.env
+env/.env.*
+!env/.env.example
+!env/.env.test
+*.log
+npm-debug.log*
+
+# Données locales écrites par `npm run dev` (workspacePath = racine du dépôt, ADR-005)
+.agents/
+
+# Fichiers d'IDE et outils
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Dossiers temporaires et scratch
+tmp/
+temp/
+scratch/
+dist/
+out/
+.local/
+.vitest
+test-results/
+playwright-report/
+
+# Fichiers générés au build (SPEC-ARCH-08, ADR-012)
+*.generated.ts
+src/lib/http/*.generated.ts

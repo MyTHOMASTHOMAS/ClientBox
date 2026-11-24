@@ -1,0 +1,5 @@
+# Normalisation des fins de ligne pour la portabilité inter-OS
+* text=auto eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+

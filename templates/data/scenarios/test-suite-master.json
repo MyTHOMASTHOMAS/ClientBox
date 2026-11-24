@@ -1,0 +1,107 @@
+{
+  "id": "test-suite-master",
+  "name": "Suite de Tests Complète — Orchestrateur avec Audit IA",
+  "description": "Scénario maître : nettoie out/test-runs/, exécute séquentiellement chaque sous-scénario de test, puis confie l'audit des preuves à un Agent IA qui génère RAPPORT-AUDIT.md.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": { "x": 60, "y": 200 }
+    },
+    {
+      "id": "clean-slate",
+      "type": "command",
+      "commandLine": "node scripts/clean-test-runs.js",
+      "position": { "x": 300, "y": 200 }
+    },
+    {
+      "id": "call-step1",
+      "type": "callScenario",
+      "targetScenarioId": "test-step1-dialogue",
+      "position": { "x": 580, "y": 200 }
+    },
+    {
+      "id": "call-step2",
+      "type": "callScenario",
+      "targetScenarioId": "test-step2-if",
+      "position": { "x": 860, "y": 200 }
+    },
+    {
+      "id": "call-step3",
+      "type": "callScenario",
+      "targetScenarioId": "test-step3-clear-context",
+      "position": { "x": 1140, "y": 200 }
+    },
+    {
+      "id": "call-step4",
+      "type": "callScenario",
+      "targetScenarioId": "test-step4-command",
+      "position": { "x": 1420, "y": 200 }
+    },
+    {
+      "id": "call-step5",
+      "type": "callScenario",
+      "targetScenarioId": "test-step5-recursion",
+      "position": { "x": 1700, "y": 200 }
+    },
+    {
+      "id": "agent-audit-final",
+      "type": "run",
+      "agentId": "agent-auditeur",
+      "promptId": "prompt-audit-test-suite",
+      "exitId": "exit-audit",
+      "position": { "x": 1980, "y": 200 }
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "clean-slate",
+      "targetPortIndex": 0,
+      "key": "c0"
+    },
+    {
+      "sourceNodeId": "clean-slate",
+      "sourcePortIndex": 0,
+      "targetNodeId": "call-step1",
+      "targetPortIndex": 0,
+      "key": "c1"
+    },
+    {
+      "sourceNodeId": "call-step1",
+      "sourcePortIndex": 0,
+      "targetNodeId": "call-step2",
+      "targetPortIndex": 0,
+      "key": "c2"
+    },
+    {
+      "sourceNodeId": "call-step2",
+      "sourcePortIndex": 0,
+      "targetNodeId": "call-step3",
+      "targetPortIndex": 0,
+      "key": "c3"
+    },
+    {
+      "sourceNodeId": "call-step3",
+      "sourcePortIndex": 0,
+      "targetNodeId": "call-step4",
+      "targetPortIndex": 0,
+      "key": "c4"
+    },
+    {
+      "sourceNodeId": "call-step4",
+      "sourcePortIndex": 0,
+      "targetNodeId": "call-step5",
+      "targetPortIndex": 0,
+      "key": "c5"
+    },
+    {
+      "sourceNodeId": "call-step5",
+      "sourcePortIndex": 0,
+      "targetNodeId": "agent-audit-final",
+      "targetPortIndex": 0,
+      "key": "c6"
+    }
+  ]
+}

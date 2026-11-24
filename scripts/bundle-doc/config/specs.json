@@ -1,0 +1,7 @@
+{
+  "maxLines": 2000,
+  "folders": [
+    { "path": "tdd/specs", "recursive": true },
+    { "path": "tdd/docs/utils", "recursive": true }
+  ]
+}

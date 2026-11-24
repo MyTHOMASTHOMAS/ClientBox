@@ -1,0 +1,66 @@
+{
+  "id": "test-step2-if",
+  "name": "Test Step 2 — Branchement Conditionnel If",
+  "description": "Évalue la condition If : la branche vraie écrit step2-vrai.txt et la branche fausse (step2-faux.txt) ne doit pas être exécutée.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": { "x": 80, "y": 200 }
+    },
+    {
+      "id": "cmd-trigger",
+      "type": "command",
+      "commandLine": "node -e \"require('fs').writeFileSync('out/test-runs/step2-trigger.txt', 'VRAI\\n')\"",
+      "position": { "x": 380, "y": 200 }
+    },
+    {
+      "id": "if-eval",
+      "type": "if",
+      "ifScriptId": "if-step2-branching",
+      "position": { "x": 680, "y": 200 }
+    },
+    {
+      "id": "cmd-vrai",
+      "type": "command",
+      "commandLine": "node -e \"require('fs').writeFileSync('out/test-runs/step2-vrai.txt', 'BRANCHE_VRAI_VALIDEE\\n')\"",
+      "position": { "x": 1000, "y": 120 }
+    },
+    {
+      "id": "cmd-faux",
+      "type": "command",
+      "commandLine": "node -e \"require('fs').writeFileSync('out/test-runs/step2-faux.txt', 'BRANCHE_FAUX_ERREUR\\n')\"",
+      "position": { "x": 1000, "y": 280 }
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-trigger",
+      "targetPortIndex": 0,
+      "key": "c1"
+    },
+    {
+      "sourceNodeId": "cmd-trigger",
+      "sourcePortIndex": 0,
+      "targetNodeId": "if-eval",
+      "targetPortIndex": 0,
+      "key": "c2"
+    },
+    {
+      "sourceNodeId": "if-eval",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-vrai",
+      "targetPortIndex": 0,
+      "key": "vrai"
+    },
+    {
+      "sourceNodeId": "if-eval",
+      "sourcePortIndex": 1,
+      "targetNodeId": "cmd-faux",
+      "targetPortIndex": 0,
+      "key": "faux"
+    }
+  ]
+}

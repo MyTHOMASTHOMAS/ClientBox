@@ -1,0 +1,5 @@
+{
+  "id": "prompt-validation",
+  "name": "Audit et validation",
+  "content": "Analyse les modifications de code produites, vérifie la complétude des tests et atteste de la conformité. Sois concis."
+}

@@ -1,0 +1,66 @@
+{
+  "id": "test-step5-recursion",
+  "name": "Test Step 5 — Récursion Contrôlée CallScenario",
+  "description": "Ajoute une ligne dans out/test-runs/step5-recursion.txt via un script, puis boucle par CallScenario jusqu'à atteindre 3 lignes vérifiées par le bloc If.",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "start",
+      "position": { "x": 80, "y": 200 }
+    },
+    {
+      "id": "cmd-append",
+      "type": "command",
+      "commandLine": "node scripts/append-recursion-line.js",
+      "position": { "x": 380, "y": 200 }
+    },
+    {
+      "id": "if-check-lignes",
+      "type": "if",
+      "ifScriptId": "if-step5-recursion",
+      "position": { "x": 680, "y": 200 }
+    },
+    {
+      "id": "cmd-done",
+      "type": "command",
+      "commandLine": "node -e \"console.log('RECURSION_TERMINEE')\"",
+      "position": { "x": 1000, "y": 120 }
+    },
+    {
+      "id": "call-recurse",
+      "type": "callScenario",
+      "targetScenarioId": "test-step5-recursion",
+      "position": { "x": 1000, "y": 280 }
+    }
+  ],
+  "connections": [
+    {
+      "sourceNodeId": "start",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-append",
+      "targetPortIndex": 0,
+      "key": "c1"
+    },
+    {
+      "sourceNodeId": "cmd-append",
+      "sourcePortIndex": 0,
+      "targetNodeId": "if-check-lignes",
+      "targetPortIndex": 0,
+      "key": "c2"
+    },
+    {
+      "sourceNodeId": "if-check-lignes",
+      "sourcePortIndex": 0,
+      "targetNodeId": "cmd-done",
+      "targetPortIndex": 0,
+      "key": "termine"
+    },
+    {
+      "sourceNodeId": "if-check-lignes",
+      "sourcePortIndex": 1,
+      "targetNodeId": "call-recurse",
+      "targetPortIndex": 0,
+      "key": "continuer"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+@startuml use-cases
+title ClientsBox — Diagramme des Cas d'Utilisation
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+actor "Utilisateur Local" as User
+
+rectangle "ClientsBox Application (IHM & API Web)" {
+  usecase "Gérer les ressources déclaratives\n(CRUD Agents, Profils, Prompts, Exits, Conditions If, Scénarios)" as UC_CRUD
+  usecase "Composer un scénario sur le canvas\n(Glisser-déposer, câblage, inspection de blocs)" as UC_Canvas
+  usecase "Lancer l'exécution d'un scénario" as UC_RunScenario
+  usecase "Suivre l'exécution et le streaming live\n(Terminal web volatil en temps réel)" as UC_Stream
+  usecase "Interrompre l'exécution en urgence (Stop)\n(En cours de run ou en état de pause)" as UC_Stop
+  usecase "Réinitialiser manuellement le contexte d'un agent\n(Bouton clear manuel dans l'IHM)" as UC_ClearContext
+}
+
+User --> UC_CRUD
+User --> UC_Canvas
+User --> UC_RunScenario
+User --> UC_Stream
+User --> UC_Stop
+User --> UC_ClearContext
+
+note right of (UC_CRUD)
+  SPEC-UI-01
+  SPEC-DATA-01
+  SPEC-DATA-02
+  SPEC-DATA-04
+  SPEC-ADPT-02
+  REQ-007..013, R-03..07, R-28, R-36
+end note
+
+note right of (UC_Canvas)
+  SPEC-UI-02
+  SPEC-DATA-03
+  REQ-014..015, REQ-035
+  R-08..15, R-19, R-43
+end note
+
+note right of (UC_RunScenario)
+  SPEC-UI-02
+  SPEC-ENG-01..04
+  SPEC-SRV-02
+  REQ-030, R-42, R-45
+end note
+
+note right of (UC_Stream)
+  SPEC-UI-03
+  SPEC-SRV-02
+  SPEC-ADPT-01
+  REQ-024, R-26, REQ-110, REQ-111
+end note
+
+note right of (UC_Stop)
+  SPEC-UI-03
+  SPEC-ADPT-03
+  REQ-025, R-34
+end note
+
+note right of (UC_ClearContext)
+  SPEC-UI-03
+  SPEC-ADPT-03
+  REQ-021, R-30
+end note
+
+@enduml
