@@ -9,7 +9,8 @@ $ErrorActionPreference = "Stop"
 
 $ImageName  = if ($env:CLIENTSBOX_IMAGE) { $env:CLIENTSBOX_IMAGE } else { "clientsbox:latest" }
 $AuthVolume = "clientsbox-cli-auth"
-$HostDir    = (Get-Location).Path
+$HostDir       = (Get-Location).Path
+$HostDirDocker = $HostDir -replace '\\', '/'
 
 # Conversion du chemin Windows (C:\dossier) en chemin POSIX pour le conteneur (/c/dossier)
 if ($HostDir -match '^([A-Za-z]):(.*)$') {
@@ -58,20 +59,23 @@ $DockerArgs = @(
     "--rm"
     "-it"
     "--entrypoint", "bash"
+    "-e", "IS_SANDBOX=1"
     "-v", "${AuthVolume}:/root"
-    "-v", "${HostDir}:${ContainerDir}"
+    "-v", "${HostDirDocker}:${ContainerDir}"
     "-w", $ContainerDir
 )
 
 # Montage optionnel de la configuration Git et des clés SSH hôte en lecture seule
 $GitConfig = Join-Path $env:USERPROFILE ".gitconfig"
 if (Test-Path -LiteralPath $GitConfig -PathType Leaf) {
-    $DockerArgs += "-v", "${GitConfig}:/root/.gitconfig:ro"
+    $GitConfigDocker = $GitConfig -replace '\\', '/'
+    $DockerArgs += "-v", "${GitConfigDocker}:/root/.gitconfig:ro"
 }
 
 $SshDir = Join-Path $env:USERPROFILE ".ssh"
 if (Test-Path -LiteralPath $SshDir -PathType Container) {
-    $DockerArgs += "-v", "${SshDir}:/root/.ssh:ro"
+    $SshDirDocker = $SshDir -replace '\\', '/'
+    $DockerArgs += "-v", "${SshDirDocker}:/root/.ssh:ro"
 }
 
 # Masquage de env/.env hôte avec un fichier vide en lecture seule (équivalent /dev/null)
@@ -83,7 +87,8 @@ if (Test-Path -LiteralPath $HostEnvFile -PathType Leaf) {
     } else {
         Clear-Content -LiteralPath $EmptyEnvFile
     }
-    $DockerArgs += "-v", "${EmptyEnvFile}:${ContainerDir}/env/.env:ro"
+    $EmptyEnvFileDocker = $EmptyEnvFile -replace '\\', '/'
+    $DockerArgs += "-v", "${EmptyEnvFileDocker}:${ContainerDir}/env/.env:ro"
 }
 
 & docker run @DockerArgs $ImageName
